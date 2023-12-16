@@ -77,8 +77,9 @@ impl VirtualMachine {
         
         self.load_fontset(); // Load fontset into memory before anything else.
 
-        for byte_index in 0..rom_buffer_len {
-            self.memory.write(PROCESSOR_INTERNAL_PROGRAM_COUNTER_START + byte_index as u16, rom_buffer[byte_index]);
+        // TEST WARN
+        for (byte_index, byte_value) in rom_buffer.iter().enumerate() {
+            self.memory.write(PROCESSOR_INTERNAL_PROGRAM_COUNTER_START + byte_index as u16, *byte_value);
         }
 
         println!("[Info] ROM successfully loaded into memory !");
