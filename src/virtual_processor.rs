@@ -1,8 +1,8 @@
+use crate::audio_system::AudioSystem;
 use crate::globals::*;
 use crate::memory::Memory;
-use crate::render_table::RenderTable;
 use crate::render_table::PixelState;
-use crate::audio_system::AudioSystem;
+use crate::render_table::RenderTable;
 
 use rand::{rngs, Rng};
 
@@ -49,7 +49,9 @@ impl VirtualProcessor {
     }
 
     pub fn update_timers(&mut self, audio_system: &AudioSystem) {
-        if self.delay_timer > 0x0 { self.delay_timer -= 1; }
+        if self.delay_timer > 0x0 {
+            self.delay_timer -= 1;
+        }
         if self.sound_timer > 0x0 {
             self.sound_timer -= 1;
             if self.sound_timer == 0x1 {
@@ -65,7 +67,12 @@ impl VirtualProcessor {
         msb << 8 | lsb
     }
 
-    pub fn execute_instruction(&mut self, opcode: u16, memory: &mut Memory, render_table: &mut RenderTable) {
+    pub fn execute_instruction(
+        &mut self,
+        opcode: u16,
+        memory: &mut Memory,
+        render_table: &mut RenderTable,
+    ) {
         println!("[Info] Currently executed Opcode -> {:#06x}", opcode);
 
         let nnn = opcode & 0x0FFF;
@@ -82,135 +89,159 @@ impl VirtualProcessor {
                         render_table.clear();
                         self.draw_flag = true;
                         self.program_counter += 2;
-                    },
+                    }
                     0x00EE => {
                         // RET
                         self.program_counter = self.stack.pop().unwrap();
                         self.program_counter += 2;
-                    },
-                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode)
+                    }
+                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode),
                 }
-            },
+            }
             0x1000 => {
                 // JP addr
                 self.program_counter = nnn;
-            },
+            }
             0x2000 => {
                 // CALL addr
                 self.stack.push(self.program_counter);
                 self.program_counter = nnn;
-            },
+            }
             0x3000 => {
                 // SE Vx, byte
-                if self.registers[x as usize] == nn { self.program_counter += 4; }
-                else { self.program_counter += 2; }  
-            },
+                if self.registers[x as usize] == nn {
+                    self.program_counter += 4;
+                } else {
+                    self.program_counter += 2;
+                }
+            }
             0x4000 => {
                 // SNE Vx, byte
-                if self.registers[x as usize] != nn { self.program_counter += 4; }
-                else { self.program_counter += 2; }
-            },
+                if self.registers[x as usize] != nn {
+                    self.program_counter += 4;
+                } else {
+                    self.program_counter += 2;
+                }
+            }
             0x5000 => {
                 // SE Vx, Vy
-                if self.registers[x as usize] == self.registers[y as usize] { self.program_counter += 4; }
-                else { self.program_counter += 2; }
-            },
+                if self.registers[x as usize] == self.registers[y as usize] {
+                    self.program_counter += 4;
+                } else {
+                    self.program_counter += 2;
+                }
+            }
             0x6000 => {
                 // LD Vx, byte
                 self.registers[x as usize] = nn;
                 self.program_counter += 2;
-            },
+            }
             0x7000 => {
                 // ADD Vx, byte
                 self.registers[x as usize] += nn;
                 self.program_counter += 2;
-            },
+            }
             0x8000 => {
                 match opcode & 0x000F {
                     0x0000 => {
                         // LD Vx, Vy
                         self.registers[x as usize] = self.registers[y as usize];
                         self.program_counter += 2;
-                    },
+                    }
                     0x0001 => {
                         // OR Vx, Vy
                         self.registers[x as usize] |= self.registers[y as usize];
                         self.program_counter += 2;
-                    },
+                    }
                     0x0002 => {
                         // AND Vx, Vy
                         self.registers[x as usize] &= self.registers[y as usize];
                         self.program_counter += 2;
-                    },
+                    }
                     0x0003 => {
                         // XOR Vx, Vy
                         self.registers[x as usize] ^= self.registers[y as usize];
                         self.program_counter += 2;
-                    },
+                    }
                     0x0004 => {
                         // ADD Vx, Vy
-                        let r = self.registers[x as usize] as u16 + self.registers[y as usize] as u16;
+                        let r =
+                            self.registers[x as usize] as u16 + self.registers[y as usize] as u16;
 
                         self.registers[0xF] = if r > 0xFF { 1 } else { 0 };
 
                         self.registers[x as usize] = (r & 0xFF) as u8;
-                        
+
                         self.program_counter += 2;
-                    },
+                    }
                     0x0005 => {
                         // SUB Vx, Vy
-                        self.registers[0xF] = if self.registers[x as usize] > self.registers[y as usize] { 1 } else { 0 };
+                        self.registers[0xF] =
+                            if self.registers[x as usize] > self.registers[y as usize] {
+                                1
+                            } else {
+                                0
+                            };
 
                         self.registers[x as usize] -= self.registers[y as usize];
 
                         self.program_counter += 2;
-                    },
+                    }
                     0x0006 => {
                         // SHR Vx {, Vy}
                         self.registers[0xF] = self.registers[x as usize] & 0x1;
                         self.registers[x as usize] >>= 1;
 
                         self.program_counter += 2;
-                    },
+                    }
                     0x0007 => {
                         // SUBN Vx, Vy
-                        self.registers[0xF] = if self.registers[y as usize] > self.registers[x as usize] { 1 } else { 0 };
+                        self.registers[0xF] =
+                            if self.registers[y as usize] > self.registers[x as usize] {
+                                1
+                            } else {
+                                0
+                            };
 
-                        self.registers[x as usize] = self.registers[y as usize] - self.registers[x as usize];
+                        self.registers[x as usize] =
+                            self.registers[y as usize] - self.registers[x as usize];
 
                         self.program_counter += 2;
-                    },
+                    }
                     0x000E => {
                         // SHL Vx {, Vy}
                         self.registers[0xF] = (self.registers[x as usize] & 128) >> 7;
                         self.registers[x as usize] <<= 1;
-                        
+
                         self.program_counter += 2;
-                    },
-                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode)
+                    }
+                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode),
                 }
-           },
-           0x9000 => {
+            }
+            0x9000 => {
                 // SNE Vx, Vy
-                if self.registers[x as usize] != self.registers[y as usize] { self.program_counter += 4; }
-                else { self.program_counter += 2; }
-           },
-           0xA000 => {
+                if self.registers[x as usize] != self.registers[y as usize] {
+                    self.program_counter += 4;
+                } else {
+                    self.program_counter += 2;
+                }
+            }
+            0xA000 => {
                 // LD I, addr
                 self.index_register = nnn;
                 self.program_counter += 2;
-           },
-           0xB000 => {
+            }
+            0xB000 => {
                 // JP V0, addr
                 self.program_counter = self.registers[0x0] as u16 + nnn;
                 self.program_counter += 2;
-           },
-           0xC000 => {
+            }
+            0xC000 => {
                 // RND Vx, byte
                 self.registers[x as usize] = self.rng.gen_range(0..0xFF) & nn;
                 self.program_counter += 2;
-           },
-           0xD000 => {
+            }
+            0xD000 => {
                 // DRW Vx, Vy, nibble
                 self.registers[0xF] = 0;
 
@@ -225,10 +256,18 @@ impl VirtualProcessor {
                             let pixel_y = origin_y.wrapping_add(y_coord) % CHIP8_SCREEN_HEIGHT;
 
                             if render_table.is_pixel_switched_on(pixel_x, pixel_y) {
-                                render_table.change_pixel_state_to(pixel_x, pixel_y, PixelState::SwitchedOff);
+                                render_table.change_pixel_state_to(
+                                    pixel_x,
+                                    pixel_y,
+                                    PixelState::SwitchedOff,
+                                );
                                 self.registers[0xF] = 1; // collision.
                             } else {
-                                render_table.change_pixel_state_to(pixel_x, pixel_y, PixelState::SwitchedOn);
+                                render_table.change_pixel_state_to(
+                                    pixel_x,
+                                    pixel_y,
+                                    PixelState::SwitchedOn,
+                                );
                             }
                         }
                     }
@@ -236,29 +275,35 @@ impl VirtualProcessor {
 
                 self.draw_flag = true;
                 self.program_counter += 2;
-           },
-           0xE000 => {
+            }
+            0xE000 => {
                 match opcode & 0x00FF {
                     0x009E => {
                         // SKP Vx
-                        if self.keys[self.registers[x as usize] as usize] { self.program_counter += 4; }
-                        else { self.program_counter += 2 };
-                    },
+                        if self.keys[self.registers[x as usize] as usize] {
+                            self.program_counter += 4;
+                        } else {
+                            self.program_counter += 2
+                        };
+                    }
                     0x00A1 => {
                         // SKNP VX
-                        if !self.keys[self.registers[x as usize] as usize] { self.program_counter += 4; }
-                        else { self.program_counter += 2; }
-                    },
-                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode)
+                        if !self.keys[self.registers[x as usize] as usize] {
+                            self.program_counter += 4;
+                        } else {
+                            self.program_counter += 2;
+                        }
+                    }
+                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode),
                 }
-           },
-           0xF000 => {
+            }
+            0xF000 => {
                 match opcode & 0x00FF {
                     0x0007 => {
                         // LD Vx, DT
                         self.registers[x as usize] = self.delay_timer;
                         self.program_counter += 2;
-                    },
+                    }
                     0x000A => {
                         // LD Vx, K
                         let mut pressed = false;
@@ -275,27 +320,27 @@ impl VirtualProcessor {
                         }
 
                         self.program_counter += 2;
-                    },
+                    }
                     0x0015 => {
                         // LD DT, Vx
                         self.delay_timer = self.registers[x as usize];
                         self.program_counter += 2;
-                    },
+                    }
                     0x0018 => {
                         // LD ST, Vx
                         self.sound_timer = self.registers[x as usize];
                         self.program_counter += 2;
-                    },
+                    }
                     0x001E => {
                         // ADD I, Vx
                         self.index_register += self.registers[x as usize] as u16;
                         self.program_counter += 2;
-                    },
+                    }
                     0x0029 => {
                         // LD F, Vx
                         self.index_register = self.registers[x as usize] as u16 * 5;
                         self.program_counter += 2;
-                    },
+                    }
                     0x0033 => {
                         // LD B, Vx
 
@@ -306,7 +351,7 @@ impl VirtualProcessor {
                         memory.write(self.index_register + 2, reg_val % 10);
 
                         self.program_counter += 2;
-                    },
+                    }
                     0x0055 => {
                         // LD [I], Vx
                         for i in 0..(x + 1) {
@@ -315,7 +360,7 @@ impl VirtualProcessor {
                         }
 
                         self.program_counter += 2;
-                    },
+                    }
                     0x0065 => {
                         // LD Vx, [I]
                         for i in 0..(x + 1) {
@@ -324,11 +369,11 @@ impl VirtualProcessor {
                         }
 
                         self.program_counter += 2;
-                    },
-                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode)
+                    }
+                    _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode),
                 }
-           },
-            _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode)
+            }
+            _ => panic!("[Error] Unknown opcode -> {:#06x}", opcode),
         }
     }
 }

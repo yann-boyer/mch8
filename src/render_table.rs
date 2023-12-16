@@ -3,19 +3,19 @@ use crate::globals::*;
 #[derive(PartialEq)]
 pub enum PixelState {
     SwitchedOn,
-    SwitchedOff
+    SwitchedOff,
 }
 
 const TOTAL_RENDER_TABLE_SIZE: u16 = CHIP8_SCREEN_WIDTH as u16 * CHIP8_SCREEN_HEIGHT as u16;
 
 pub struct RenderTable {
-    render_table: [bool; TOTAL_RENDER_TABLE_SIZE as usize]
+    render_table: [bool; TOTAL_RENDER_TABLE_SIZE as usize],
 }
 
 impl RenderTable {
     pub fn new() -> RenderTable {
         RenderTable {
-            render_table: [false; TOTAL_RENDER_TABLE_SIZE as usize]
+            render_table: [false; TOTAL_RENDER_TABLE_SIZE as usize],
         }
     }
 
@@ -37,7 +37,6 @@ impl RenderTable {
         let state: bool = new_state == PixelState::SwitchedOn;
 
         self.render_table[y as usize * CHIP8_SCREEN_WIDTH as usize + x as usize] = state;
-        
     }
 
     pub fn clear(&mut self) {

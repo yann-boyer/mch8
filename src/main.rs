@@ -1,11 +1,11 @@
 extern crate sdl2;
 
-use mch8::virtual_machine::VirtualMachine;
 use mch8::globals::*;
-use sdl2::mixer::{AUDIO_S16LSB, DEFAULT_CHANNELS, InitFlag};
-use sdl2::pixels::Color;
+use mch8::virtual_machine::VirtualMachine;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::mixer::{InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS};
+use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use std::time::Duration;
 use std::{env, process};
@@ -36,10 +36,13 @@ fn main() {
         std::process::exit(1);
     }
 
-
     virtual_machine.init_audio();
 
-    let window = video_subsystem.window("MCH8 by Yann BOYER", WINDOW_WIDTH, WINDOW_HEIGHT).position_centered().build().unwrap();
+    let window = video_subsystem
+        .window("MCH8 by Yann BOYER", WINDOW_WIDTH, WINDOW_HEIGHT)
+        .position_centered()
+        .build()
+        .unwrap();
 
     let mut canvas = window.into_canvas().build().unwrap();
 
@@ -56,51 +59,53 @@ fn main() {
     while is_running {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} => {
+                Event::Quit { .. } => {
                     println!("[Info] Exiting...");
                     is_running = false;
+                }
+                Event::KeyDown {
+                    keycode: Some(keycode),
+                    ..
+                } => match keycode {
+                    Keycode::Num1 => virtual_machine.set_key(0x1, true),
+                    Keycode::Num2 => virtual_machine.set_key(0x2, true),
+                    Keycode::Num3 => virtual_machine.set_key(0x3, true),
+                    Keycode::Num4 => virtual_machine.set_key(0xC, true),
+                    Keycode::Q => virtual_machine.set_key(0x4, true),
+                    Keycode::W => virtual_machine.set_key(0x5, true),
+                    Keycode::E => virtual_machine.set_key(0x6, true),
+                    Keycode::R => virtual_machine.set_key(0xD, true),
+                    Keycode::A => virtual_machine.set_key(0x7, true),
+                    Keycode::S => virtual_machine.set_key(0x8, true),
+                    Keycode::D => virtual_machine.set_key(0x9, true),
+                    Keycode::F => virtual_machine.set_key(0xE, true),
+                    Keycode::Z => virtual_machine.set_key(0xA, true),
+                    Keycode::X => virtual_machine.set_key(0x0, true),
+                    Keycode::C => virtual_machine.set_key(0xB, true),
+                    Keycode::V => virtual_machine.set_key(0xF, true),
+                    _ => (),
                 },
-                Event::KeyDown { keycode: Some(keycode), .. } => {
-                    match keycode {
-                        Keycode::Num1 => virtual_machine.set_key(0x1, true),
-                        Keycode::Num2 => virtual_machine.set_key(0x2, true),
-                        Keycode::Num3 => virtual_machine.set_key(0x3, true),
-                        Keycode::Num4 => virtual_machine.set_key(0xC, true),
-                        Keycode::Q => virtual_machine.set_key(0x4, true),
-                        Keycode::W => virtual_machine.set_key(0x5, true),
-                        Keycode::E => virtual_machine.set_key(0x6, true),
-                        Keycode::R => virtual_machine.set_key(0xD, true),
-                        Keycode::A => virtual_machine.set_key(0x7, true),
-                        Keycode::S => virtual_machine.set_key(0x8, true),
-                        Keycode::D => virtual_machine.set_key(0x9, true),
-                        Keycode::F => virtual_machine.set_key(0xE, true),
-                        Keycode::Z => virtual_machine.set_key(0xA, true),
-                        Keycode::X => virtual_machine.set_key(0x0, true),
-                        Keycode::C => virtual_machine.set_key(0xB, true),
-                        Keycode::V => virtual_machine.set_key(0xF, true),
-                        _ => ()
-                    }
-                },
-                Event::KeyUp { keycode: Some(keycode), .. } => {
-                    match keycode {
-                        Keycode::Num1 => virtual_machine.set_key(0x1, false),
-                        Keycode::Num2 => virtual_machine.set_key(0x2, false),
-                        Keycode::Num3 => virtual_machine.set_key(0x3, false),
-                        Keycode::Num4 => virtual_machine.set_key(0xC, false),
-                        Keycode::Q => virtual_machine.set_key(0x4, false),
-                        Keycode::W => virtual_machine.set_key(0x5, false),
-                        Keycode::E => virtual_machine.set_key(0x6, false),
-                        Keycode::R => virtual_machine.set_key(0xD, false),
-                        Keycode::A => virtual_machine.set_key(0x7, false),
-                        Keycode::S => virtual_machine.set_key(0x8, false),
-                        Keycode::D => virtual_machine.set_key(0x9, false),
-                        Keycode::F => virtual_machine.set_key(0xE, false),
-                        Keycode::Z => virtual_machine.set_key(0xA, false),
-                        Keycode::X => virtual_machine.set_key(0x0, false),
-                        Keycode::C => virtual_machine.set_key(0xB, false),
-                        Keycode::V => virtual_machine.set_key(0xF, false),
-                        _ => ()
-                    }
+                Event::KeyUp {
+                    keycode: Some(keycode),
+                    ..
+                } => match keycode {
+                    Keycode::Num1 => virtual_machine.set_key(0x1, false),
+                    Keycode::Num2 => virtual_machine.set_key(0x2, false),
+                    Keycode::Num3 => virtual_machine.set_key(0x3, false),
+                    Keycode::Num4 => virtual_machine.set_key(0xC, false),
+                    Keycode::Q => virtual_machine.set_key(0x4, false),
+                    Keycode::W => virtual_machine.set_key(0x5, false),
+                    Keycode::E => virtual_machine.set_key(0x6, false),
+                    Keycode::R => virtual_machine.set_key(0xD, false),
+                    Keycode::A => virtual_machine.set_key(0x7, false),
+                    Keycode::S => virtual_machine.set_key(0x8, false),
+                    Keycode::D => virtual_machine.set_key(0x9, false),
+                    Keycode::F => virtual_machine.set_key(0xE, false),
+                    Keycode::Z => virtual_machine.set_key(0xA, false),
+                    Keycode::X => virtual_machine.set_key(0x0, false),
+                    Keycode::C => virtual_machine.set_key(0xB, false),
+                    Keycode::V => virtual_machine.set_key(0xF, false),
+                    _ => (),
                 },
                 _ => {}
             }
@@ -112,7 +117,12 @@ fn main() {
         if virtual_machine.screen_need_repaint() {
             for y in 0..CHIP8_SCREEN_HEIGHT {
                 for x in 0..CHIP8_SCREEN_WIDTH {
-                    let pixel = Rect::new(x as i32 * SCALE_FACTOR as i32, y as i32 * SCALE_FACTOR as i32, SCALE_FACTOR as u32, SCALE_FACTOR as u32);
+                    let pixel = Rect::new(
+                        x as i32 * SCALE_FACTOR as i32,
+                        y as i32 * SCALE_FACTOR as i32,
+                        SCALE_FACTOR as u32,
+                        SCALE_FACTOR as u32,
+                    );
                     if virtual_machine.is_pixel_switched_on(x, y) {
                         canvas.set_draw_color(Color::RGB(255, 255, 255));
                     } else {
