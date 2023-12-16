@@ -1,0 +1,22 @@
+[package]
+name = "mch8"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = "0.8.5"
+
+[dependencies.sdl2]
+version = "0.36"
+default-features = false
+features = ["mixer","static-link","use-vcpkg"]
+
+[package.metadata.vcpkg]
+dependencies = ["sdl2", "sdl2-mixer"]
+git = "https://github.com/microsoft/vcpkg"
+rev = "ea9f45d1bc03efbf43a3bbd0788d6a433b8fe445"
+
+[package.metadata.vcpkg.target]
+x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md" }
