@@ -7,6 +7,12 @@ pub struct AudioSystem {
     channels: Channel,
 }
 
+impl Default for AudioSystem {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AudioSystem {
     pub fn new() -> AudioSystem {
         AudioSystem {

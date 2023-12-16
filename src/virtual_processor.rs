@@ -21,6 +21,12 @@ pub struct VirtualProcessor {
     rng: rngs::ThreadRng,
 }
 
+impl Default for VirtualProcessor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VirtualProcessor {
     pub fn new() -> VirtualProcessor {
         VirtualProcessor {

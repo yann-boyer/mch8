@@ -4,6 +4,12 @@ pub struct Memory {
     memory: [u8; TOTAL_MEMORY_BYTES as usize],
 }
 
+impl Default for Memory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Memory {
     pub fn new() -> Memory {
         Memory {

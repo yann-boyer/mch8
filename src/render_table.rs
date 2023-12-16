@@ -12,6 +12,12 @@ pub struct RenderTable {
     render_table: [bool; TOTAL_RENDER_TABLE_SIZE as usize],
 }
 
+impl Default for RenderTable {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RenderTable {
     pub fn new() -> RenderTable {
         RenderTable {

@@ -34,6 +34,12 @@ pub struct VirtualMachine {
     audio_system: AudioSystem,
 }
 
+impl Default for VirtualMachine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VirtualMachine {
     pub fn new() -> VirtualMachine {
         VirtualMachine {
@@ -43,6 +49,7 @@ impl VirtualMachine {
             audio_system: AudioSystem::new(),
         }
     }
+    
 
     pub fn init_audio(&mut self) {
         self.audio_system.init();
