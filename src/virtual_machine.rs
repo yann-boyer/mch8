@@ -1,10 +1,10 @@
+use crate::audio_system::AudioSystem;
 use crate::globals::*;
-use crate::virtual_processor::VirtualProcessor;
 use crate::memory::Memory;
 use crate::render_table::RenderTable;
-use crate::audio_system::AudioSystem;
+use crate::virtual_processor::VirtualProcessor;
 use std::fs::File;
-use std::io::{Read, BufReader};
+use std::io::{BufReader, Read};
 
 const MAX_ROM_PROGRAM_SIZE: u16 = 0xFFF - PROCESSOR_INTERNAL_PROGRAM_COUNTER_START;
 const FONTSET_SIZE: u8 = 80;
@@ -34,13 +34,19 @@ pub struct VirtualMachine {
     audio_system: AudioSystem,
 }
 
+impl Default for VirtualMachine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VirtualMachine {
     pub fn new() -> VirtualMachine {
         VirtualMachine {
             virtual_processor: VirtualProcessor::new(),
             memory: Memory::new(),
             render_table: RenderTable::new(),
-            audio_system: AudioSystem::new()
+            audio_system: AudioSystem::new(),
         }
     }
 
@@ -57,7 +63,7 @@ impl VirtualMachine {
     pub fn load_rom(&mut self, rom_path: &str) -> Result<(), &str> {
         let rom_file_result = File::open(rom_path);
         if rom_file_result.is_err() {
-            return Err("[Error] Unable to open the given ROM file !")
+            return Err("[Error] Unable to open the given ROM file !");
         }
         let rom_file = rom_file_result.unwrap();
 
@@ -74,17 +80,20 @@ impl VirtualMachine {
         if rom_buffer_len > MAX_ROM_PROGRAM_SIZE as usize {
             return Err("[Error] The ROM file given is too big to fit into memory !");
         }
-        
+
         self.load_fontset(); // Load fontset into memory before anything else.
 
-        for byte_index in 0..rom_buffer_len {
-            self.memory.write(PROCESSOR_INTERNAL_PROGRAM_COUNTER_START + byte_index as u16, rom_buffer[byte_index]);
+        // TEST WARN
+        for (byte_index, byte_value) in rom_buffer.iter().enumerate() {
+            self.memory.write(
+                PROCESSOR_INTERNAL_PROGRAM_COUNTER_START + byte_index as u16,
+                *byte_value,
+            );
         }
 
         println!("[Info] ROM successfully loaded into memory !");
 
         Ok(())
-
     }
 
     pub fn set_key(&mut self, n: u8, is_down: bool) {
@@ -105,7 +114,11 @@ impl VirtualMachine {
 
     pub fn execute_processor_instruction(&mut self) {
         let opcode = self.virtual_processor.fetch_next_opcode(&self.memory);
-        self.virtual_processor.execute_instruction(opcode, &mut self.memory, &mut self.render_table);
+        self.virtual_processor.execute_instruction(
+            opcode,
+            &mut self.memory,
+            &mut self.render_table,
+        );
     }
 
     pub fn update_processor_timers(&mut self) {

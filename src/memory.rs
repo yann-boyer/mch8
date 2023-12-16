@@ -1,13 +1,19 @@
 const TOTAL_MEMORY_BYTES: u16 = 0x1000; // 4096 bytes of RAM.
 
 pub struct Memory {
-    memory: [u8; TOTAL_MEMORY_BYTES as usize]
+    memory: [u8; TOTAL_MEMORY_BYTES as usize],
+}
+
+impl Default for Memory {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Memory {
     pub fn new() -> Memory {
         Memory {
-            memory: [0x0; TOTAL_MEMORY_BYTES as usize]
+            memory: [0x0; TOTAL_MEMORY_BYTES as usize],
         }
     }
 
@@ -26,6 +32,6 @@ impl Memory {
             return 0x0;
         }
 
-        return self.memory[addr as usize];
+        self.memory[addr as usize]
     }
 }
