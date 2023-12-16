@@ -49,7 +49,6 @@ impl VirtualMachine {
             audio_system: AudioSystem::new(),
         }
     }
-    
 
     pub fn init_audio(&mut self) {
         self.audio_system.init();
