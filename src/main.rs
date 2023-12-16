@@ -14,8 +14,8 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() <= 1 {
-        println!("[Error] No input file provided !");
-        println!("[Info] Usage : ./mch8 <chip8.rom>");
+        eprintln!("[Error] No input file provided !");
+        eprintln!("[Info] Usage : ./mch8 <chip8.rom>");
         std::process::exit(1);
     }
 
