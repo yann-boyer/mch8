@@ -62,7 +62,7 @@ impl VirtualProcessor {
         let msb = memory.read(self.program_counter) as u16;
         let lsb = memory.read(self.program_counter + 1) as u16;
 
-        return msb << 8 | lsb;
+        msb << 8 | lsb
     }
 
     pub fn execute_instruction(&mut self, opcode: u16, memory: &mut Memory, render_table: &mut RenderTable) {

@@ -25,7 +25,7 @@ impl RenderTable {
             return false;
         }
 
-        return self.render_table[y as usize * CHIP8_SCREEN_WIDTH as usize + x as usize];
+        self.render_table[y as usize * CHIP8_SCREEN_WIDTH as usize + x as usize]
     }
 
     pub fn change_pixel_state_to(&mut self, x: u8, y: u8, new_state: PixelState) {
@@ -34,13 +34,7 @@ impl RenderTable {
             return;
         }
 
-        let state: bool;
-
-        if new_state == PixelState::SwitchedOn {
-            state = true;
-        } else {
-           state = false;
-        }
+        let state: bool = new_state == PixelState::SwitchedOn;
 
         self.render_table[y as usize * CHIP8_SCREEN_WIDTH as usize + x as usize] = state;
         

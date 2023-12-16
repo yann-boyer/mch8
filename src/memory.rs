@@ -26,6 +26,6 @@ impl Memory {
             return 0x0;
         }
 
-        return self.memory[addr as usize];
+        self.memory[addr as usize]
     }
 }
