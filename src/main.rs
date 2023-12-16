@@ -8,7 +8,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::rect::Rect;
 use std::time::Duration;
-use std::env;
+use std::{env, process};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -16,7 +16,7 @@ fn main() {
     if args.len() <= 1 {
         eprintln!("[Error] No input file provided !");
         eprintln!("[Info] Usage : ./mch8 <chip8.rom>");
-        std::process::exit(1);
+        process::exit(1);
     }
 
     let rom_path = &args[1];
